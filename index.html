@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id='app'>
+        <h1>Intentos: {{intentos}}</h1>
+        <h1>{{ mostrar }}</h1>
+        <input type="text" v-model="letraIntento"><br>
+        <button type="button" class="btn btn-primary" v-on:click="reiniciar()">Reiniciar</button><br>
+        <button type="button" class="btn btn-primary" v-on:click="enviar()" :disabled="!perdiste">Enviar palabra</button><br>
+        
+    </div>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+
+    <script>
+        new Vue({
+            el:'#app',
+            data:{
+                words:['consultar','santos','desarrollo','computadora','documento'],
+                word:'',
+                letraIntento:'',
+                letrasUsadas:[],
+                intentos:5,
+                letrasPalabra:[]
+            },
+            computed: {
+                mostrar: function() {
+                    let palabra = "";
+                    for(let i=0; i < this.word.length; i++ ){
+                        if (this.letrasUsadas.includes(this.word[i])) {
+                            palabra += this.word[i];
+                        } else {
+                            palabra += "_";
+                        }
+                    }
+                    return palabra;
+                },
+                perdiste: function(){
+                    if (this.intentos == 0){ return false; }
+                    else { return true; }
+                }
+            },
+            methods:{
+                selectWord: function(){
+                    num = Math.floor(Math.random() * this.words.length); 
+                    this.word = this.words[num];
+                    for (let i = 0; i < this.word.length; i++) {
+                        if (!this.letrasPalabra.includes(this.word[i])) {
+                            this.letrasPalabra.push(this.word[i]);
+                        }
+                    }
+                },
+                enviar: function(){
+                    if (this.word === ""){ this.selectWord();}
+                    if (this.letraIntento.length === 0 || this.letraIntento.length > 1) {
+                        this.letraIntento = "";
+                        return;
+                    }
+                    if (this.letrasUsadas.includes(this.letraIntento)) {
+                        this.letraIntento = "";
+                        return;
+                    }
+                    if (this.letrasPalabra.includes(this.letraIntento)) {
+                        this.letrasUsadas.push(this.letraIntento);
+                        this.letraIntento = "";
+                    } else {
+                        this.letrasUsadas.push(this.letraIntento);
+                        this.intentos -= 1;
+                        this.letraIntento = "";
+                    }
+
+                },
+                reiniciar: function() {
+                    this.intentos = 5;
+                    this.letrasPalabra = []
+                    this.selectWord();
+                    this.letrasUsadas = [];
+
+                } 
+            }
+        })
+    </script>
+</body>
+</html>
